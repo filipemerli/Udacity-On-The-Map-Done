@@ -15,24 +15,28 @@ class PostingViewController: UIViewController {
     
     @IBAction func findLocationButton(_ sender: Any) {
         if (addLinkTextField.text?.isEmpty)! {
-            
             sendUIAlert(error: "Please, insert a valid link!\n (like: https://udacity.com)")
-        } else {
+        }
+        else if (addLocationTextField.text?.isEmpty)! {
+            sendUIAlert(error: "Please, insert a valid location!\n (like: Boston, MA)")
+        }else {
             Student.shared.url = addLinkTextField.text!
+            let address = addLocationTextField.text!
             performUIUpdatesOnMain {
-                self.getUserLocation { placemark in
-                    Student.shared.city = (placemark?.locality)!
-                    Student.shared.state = (placemark?.administrativeArea)!
-                    self.addLocationTextField.text = "\(Student.shared.state), "+"\(Student.shared.city)"
-                    self.addLinkTextField.text = Student.shared.url
-                    let controller = self.storyboard?.instantiateViewController(withIdentifier: "NewPinView")
-                    self.present(controller!, animated: true, completion: nil)
+                UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                self.getUserLocation(address: address) { (result, error) in
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = false
+                    guard error ==  nil else {
+                        self.sendUIAlert(error: error as? String)
+                        return
+                    }
+                    if result == true {
+                        let controller = self.storyboard?.instantiateViewController(withIdentifier: "NewPinView")
+                        self.present(controller!, animated: true, completion: nil)
+                    }
                 }
             }
-            
         }
-        
-        
     }
     
     @IBAction func postPinCancel(_ sender: Any) {
@@ -43,20 +47,26 @@ class PostingViewController: UIViewController {
         super.viewDidLoad()
 
         self.addLinkTextField.delegate = self
-       /* performUIUpdatesOnMain {
-            ParseAPIClient.sharedInstance().taskForGetSingleMethod { result, error in
-                if error == nil {
-                    //print(result)
+        self.addLocationTextField.delegate = self
+        let spinner = PostingViewController.displaySpinner(onView: self.view)
+        performUIUpdatesOnMain {
+            ParseAPIClient.sharedInstance().taskForGetSingleMethod { results, error in
+                if let resultArray = results!["results"] as? [AnyObject] {
+                    if resultArray.count >= 1 {
+                        Student.shared.firstTimePosting = false
+                        self.sendUIMessage(message: "Overwrinting your current location!")
+                    } else {
+                       Student.shared.firstTimePosting = true
+                        self.sendUIMessage(message: "You are new here xD")
+                    }
                 } else {
-                    self.sendUIAlert(error: "Not able to get you location info from Udacity")
+                    Student.shared.firstTimePosting = true
+                    self.sendUIMessage(message: "You are new here :D")
                 }
+                PostingViewController.removeSpinner(spinner: spinner)
             }
-        }*/
-        
+        }
     }
-
-
-
 }
 
 // MARK: TextFields Delegate
@@ -74,7 +84,10 @@ extension PostingViewController: UITextFieldDelegate {
         return true
     }
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        textField.text = "https://"
+        if (textField.text == "" && textField == addLinkTextField)  {
+            textField.text = "https://"
+        }
+        
     }
 }
 

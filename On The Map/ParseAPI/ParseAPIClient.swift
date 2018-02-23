@@ -23,7 +23,7 @@ class ParseAPIClient: NSObject {
     // MARK: GET
     
     func taskForGetMethod(completionHandlerForGetMethod: @escaping(_ result: AnyObject?, _ error: Error?)-> Void) {
-        var request = URLRequest(url: URL(string: "\(ParseConstants.parseUrl)\(ParseConstants.getMethodLimit)\(ParseConstants.oderListAtoZ)")!)
+        var request = URLRequest(url: URL(string: "\(ParseConstants.parseUrl)\(ParseConstants.getMethodLimit)\(ParseConstants.orderFromNewestToOldest)")!)
         request.addValue("\(ParseConstants.appID)", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("\(ParseConstants.apiKey)", forHTTPHeaderField: "X-Parse-REST-API-Key")
         let session = URLSession.shared
@@ -49,7 +49,7 @@ class ParseAPIClient: NSObject {
         task.resume()
     }
     
-    func taskForGetSingleMethod(completionHandlerForGetSingle: @escaping(_ result: AnyObject?,_ error: Error?) -> Void) {
+    func taskForGetSingleMethod(completionHandlerForGetSingle: @escaping(_ results: AnyObject?,_ error: Error?) -> Void) {
         var request = URLRequest(url: URL(string: "\(ParseConstants.parseUrl)?where=%7B%22uniqueKey%22%3A%22\(Student.shared.userKey)%22%7D")!)
         request.addValue("\(ParseConstants.appID)", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("\(ParseConstants.apiKey)", forHTTPHeaderField: "X-Parse-REST-API-Key")
@@ -59,10 +59,19 @@ class ParseAPIClient: NSObject {
                 completionHandlerForGetSingle(nil, error)
                 return
             }
-            self.convertDataWithCompletionHandler(data!) { results, error in
-                
-                completionHandlerForGetSingle(results, error)
-                //print(results)
+            self.convertDataWithCompletionHandler(data!) { parsedResults, error in
+                if let error = error {
+                    completionHandlerForGetSingle(nil, error)
+                } else {
+                    if let resultArray = parsedResults!["results"] as? [AnyObject] {
+                        if let firstPart = resultArray.last as? [String: AnyObject] {
+                            if let objectId = firstPart["objectId"] as? String {
+                                Student.shared.objectId = objectId
+                            }
+                        }
+                    }
+                    completionHandlerForGetSingle(parsedResults, nil)
+                }
             }
         }
         task.resume()
@@ -70,24 +79,57 @@ class ParseAPIClient: NSObject {
     
     
     func taskForPutMethod(completionHandlerForPut: @ escaping(_ result: Bool?,_ error: Error?) -> Void) {
-        let urlString = "https://parse.udacity.com/parse/classes/StudentLocation/8ZExGR5uX8"
+        let urlString = "https://parse.udacity.com/parse/classes/StudentLocation/\(Student.shared.objectId)"
         let url = URL(string: urlString)
         var request = URLRequest(url: url!)
         request.httpMethod = "PUT"
         request.addValue("\(ParseConstants.appID)", forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue("\(ParseConstants.apiKey)", forHTTPHeaderField: "X-Parse-REST-API-Key")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = "{\"uniqueKey\": \"\(Student.shared.userKey)\", \"firstName\": \"\(Student.shared.firstName)\", \"lastName\": \"\",\"mapString\": \"\(Student.shared.mapString)\", \"mediaURL\": \"\(Student.shared.url)\",\"latitude\": \(Student.shared.latitude), \"longitude\": \(Student.shared.longitude)}".data(using: .utf8)
+        request.httpBody = "{\"uniqueKey\": \"\(Student.shared.userKey)\", \"firstName\": \"\(Student.shared.firstName)\", \"lastName\": \"\",\"mapString\": \"\(Student.shared.mapString)\", \"mediaURL\": \"\(Student.shared.url)\",\"latitude\": \(Student.shared.latitude!), \"longitude\": \(Student.shared.longitude!)}".data(using: .utf8)
         let session = URLSession.shared
         let task = session.dataTask(with: request) { data, response, error in
-            if error != nil { // Handle error…
+            guard error == nil else {
                 completionHandlerForPut(false, error)
                 return
             }
-            completionHandlerForPut(true, nil)
+            self.convertDataWithCompletionHandler(data!) { parsedResults, error in
+                if let error = error {
+                    completionHandlerForPut(nil, error)
+                } else {
+                    completionHandlerForPut(true, error)
+                }
+            }
         }
         task.resume()
     }
+    
+    func taskForPostMethod(completionHandlerForPost: @ escaping(_ result: Bool?,_ error: Error?) -> Void) {
+        var request = URLRequest(url: URL(string: "https://parse.udacity.com/parse/classes/StudentLocation")!)
+        request.httpMethod = "POST"
+        request.addValue("\(ParseConstants.appID)", forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue("\(ParseConstants.apiKey)", forHTTPHeaderField: "X-Parse-REST-API-Key")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = "{\"uniqueKey\": \"\(Student.shared.userKey)\", \"firstName\": \"\(Student.shared.firstName)\", \"lastName\": \"\",\"mapString\": \"\(Student.shared.mapString)\", \"mediaURL\": \"\(Student.shared.url)\",\"latitude\": \(Student.shared.latitude!), \"longitude\": \(Student.shared.longitude!)}".data(using: .utf8)
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { data, response, error in
+            guard error == nil else {
+                completionHandlerForPost(false, error)
+                return
+            }
+            self.convertDataWithCompletionHandler(data!) { parsedResults, error in
+                
+                if let error = error {
+                    completionHandlerForPost(nil, error)
+                } else {
+                    completionHandlerForPost(true, nil)
+                }
+            }
+        }
+        task.resume()
+        
+    }
+    
     
     private func convertDataWithCompletionHandler(_ data: Data, completionHandlerForConvertData: (_ result: AnyObject?, _ error: NSError?) -> Void) {
         

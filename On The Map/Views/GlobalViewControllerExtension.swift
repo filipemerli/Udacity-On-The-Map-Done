@@ -30,6 +30,14 @@ extension UIViewController {
         }
     }
     
+    func sendUIMessage(message: String) {
+        let alertController = UIAlertController(title: "Message", message: message, preferredStyle: .alert)
+        let alertAction = UIAlertAction(title: "OK", style: .default) { action in
+            alertController.dismiss(animated: true, completion: nil)
+        }
+        alertController.addAction(alertAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
     
     func sendUIAlert(error: String?) {
         let alertController = UIAlertController(title: "Error", message: error, preferredStyle: .alert)
@@ -42,12 +50,17 @@ extension UIViewController {
     
     func goToUrl(link: String?) {
         let application = UIApplication.shared
-        let url = URL(string: link!)
-        if application.canOpenURL(url!) {
-            application.open(url!, options: [:], completionHandler: nil)
+        if (link == "" || link == nil) {
+            sendUIAlert(error: "Link field in blank!")
         } else {
-            sendUIAlert(error: "It's not a valid link!")
+            let url = URL(string: link!)
+            if application.canOpenURL(url!) {
+                application.open(url!, options: [:], completionHandler: nil)
+            } else {
+                sendUIAlert(error: "Not a valid link!")
+            }
         }
+        
     }
     
     func logoutConfirm() {
@@ -56,7 +69,17 @@ extension UIViewController {
             alertController.dismiss(animated: true, completion: nil)
         })
         alertController.addAction(UIAlertAction(title: "OK", style: .default) {(action: UIAlertAction!) in
-            self.dismiss(animated: true, completion: nil)
+            UdacityAPIClient.sharedInstance().taskForDeleteMethod(completionHandlerForDelete: { (result, error) in
+                if error == nil {
+                    DispatchQueue.main.async {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.sendUIAlert(error: error?.domain ?? "Error on Logout request!\nTry again.")
+                    }
+                }
+            })
         })
         self.present(alertController, animated: true, completion: nil)
     }

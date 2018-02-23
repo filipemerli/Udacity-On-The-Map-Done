@@ -11,33 +11,22 @@ import CoreLocation
 
 extension PostingViewController {
     
-    func getUserLocation(completionHandler: @escaping (CLPlacemark?) -> Void) {
+    func getUserLocation(address: String, completionHandler: @escaping(_ result: Bool?,_ error: Error?) -> Void) {
         
         let geocoder = CLGeocoder()
         
-        let locManager = CLLocationManager()
-        locManager.requestWhenInUseAuthorization()
-        let currentLoc: CLLocation!
+        geocoder.geocodeAddressString(address, completionHandler: { (placemarks, error) -> Void in
         
-        if (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedWhenInUse || CLLocationManager.authorizationStatus() == CLAuthorizationStatus.authorizedAlways) {
-            
-            currentLoc = locManager.location
-            Student.shared.latitude = currentLoc.coordinate.latitude 
-            Student.shared.longitude = currentLoc.coordinate.longitude
-            
-            let location = CLLocation(latitude: Student.shared.latitude!, longitude: Student.shared.longitude!)
-            geocoder.reverseGeocodeLocation(location, completionHandler: { (placemarks, error) -> Void in
-                
-                var placeMark: CLPlacemark!
-                placeMark = placemarks?[0]
-                completionHandler(placeMark)
-            })
-            
-            
-        } else {
-            completionHandler(nil)
-        }
-        
+            if((error) != nil){
+                completionHandler(false, error)
+            }
+            if let placemark = placemarks?.first {
+                let coordinates:CLLocationCoordinate2D = placemark.location!.coordinate
+                Student.shared.latitude = coordinates.latitude
+                Student.shared.longitude = coordinates.longitude
+                completionHandler(true, nil)
+            }
+        })
     }
     
     

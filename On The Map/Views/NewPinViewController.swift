@@ -16,17 +16,29 @@ class NewPinViewController: UIViewController, MKMapViewDelegate {
     @IBOutlet weak var finishButton: UIButton!
     
     @IBAction func finishPost(_ sender: Any) {
-        performUIUpdatesOnMain {
-            ParseAPIClient.sharedInstance().taskForPutMethod { result, error in
-                if result == true {
-                    print("Done!")
-                    self.sendUIAlert(error: "DONE!")
-                } else {
-                    self.sendUIAlert(error: "FAILED :(")
+        let spinner = NewPinViewController.displaySpinner(onView: self.view)
+        ParseAPIClient.sharedInstance().finishNewPin(firstTimeHere: Student.shared.firstTimePosting!) { (success, error) in
+            guard error == nil else {
+                performUIUpdatesOnMain {
+                    NewPinViewController.removeSpinner(spinner: spinner)
+                    self.displayFinalResult(result: error!)
+                    self.dismiss(animated: true, completion: nil)
+                }
+                return
+            }
+            if success {
+                performUIUpdatesOnMain {
+                    NewPinViewController.removeSpinner(spinner: spinner)
+                    self.dismiss(animated: true, completion: nil)
+                }
+            } else {
+                performUIUpdatesOnMain {
+                    NewPinViewController.removeSpinner(spinner: spinner)
+                    self.displayFinalResult(result: "FAILED :(\nLooks like something went worg. You can try again!")
+                    self.dismiss(animated: true, completion: nil)
                 }
             }
         }
-        self.dismiss(animated: true, completion: nil)
     }
     
     override func viewDidLoad() {
@@ -35,8 +47,6 @@ class NewPinViewController: UIViewController, MKMapViewDelegate {
         newPinMap.delegate = self
         
         zoomOnMap()
-
-
     }
 
     @IBAction func cancelPostNewPin(_ sender: Any) {
@@ -60,6 +70,17 @@ class NewPinViewController: UIViewController, MKMapViewDelegate {
         }
         
         return pinView
+    }
+    
+    func displayFinalResult(result: String) {
+        let alertController = UIAlertController(title: "Message", message: result, preferredStyle: .alert)
+        let alertAction = UIAlertAction(title: "OK", style: .default) { action in
+            alertController.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
+        }
+        alertController.addAction(alertAction)
+        self.present(alertController, animated: true, completion: nil)
+        
     }
     
     func zoomOnMap() {

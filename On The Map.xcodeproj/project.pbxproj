@@ -10,6 +10,7 @@
 		A718F915201F7ED30050EF87 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A718F914201F7ED30050EF87 /* MapViewController.swift */; };
 		A718F917201FAE340050EF87 /* GlobalViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A718F916201FAE340050EF87 /* GlobalViewControllerExtension.swift */; };
 		A734CE6A2004F751000BA751 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A734CE692004F751000BA751 /* LoginViewController.swift */; };
+		A7449995203CAA480052D78C /* ParseAPIConvi.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7449994203CAA480052D78C /* ParseAPIConvi.swift */; };
 		A7656E9520161B10006AEF84 /* ParseAPIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7656E9420161B10006AEF84 /* ParseAPIConstants.swift */; };
 		A772CB3E2007F0DC00E26825 /* Student.swift in Sources */ = {isa = PBXBuildFile; fileRef = A772CB3D2007F0DC00E26825 /* Student.swift */; };
 		A772CB41200D1BE900E26825 /* GCDBlackBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = A772CB40200D1BE900E26825 /* GCDBlackBox.swift */; };
@@ -32,6 +33,7 @@
 		A718F914201F7ED30050EF87 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		A718F916201FAE340050EF87 /* GlobalViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalViewControllerExtension.swift; sourceTree = "<group>"; };
 		A734CE692004F751000BA751 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		A7449994203CAA480052D78C /* ParseAPIConvi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParseAPIConvi.swift; sourceTree = "<group>"; };
 		A7656E9420161B10006AEF84 /* ParseAPIConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParseAPIConstants.swift; sourceTree = "<group>"; };
 		A772CB3D2007F0DC00E26825 /* Student.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Student.swift; sourceTree = "<group>"; };
 		A772CB40200D1BE900E26825 /* GCDBlackBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GCDBlackBox.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 			children = (
 				A7656E9420161B10006AEF84 /* ParseAPIConstants.swift */,
 				A7F85AE62018B6FB000DD699 /* ParseAPIClient.swift */,
+				A7449994203CAA480052D78C /* ParseAPIConvi.swift */,
 			);
 			path = ParseAPI;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 				A79956EF201D0EED000438FC /* TableViewController.swift in Sources */,
 				A772CB47200D257800E26825 /* UdacityAPIClient.swift in Sources */,
 				A7D3606120292268006317C1 /* NewPinViewController.swift in Sources */,
+				A7449995203CAA480052D78C /* ParseAPIConvi.swift in Sources */,
 				A7F85AE32018B57B000DD699 /* StudentLocations.swift in Sources */,
 				A7E31B1C1FE979C500493970 /* AppDelegate.swift in Sources */,
 				A7F85AE92018B9D8000DD699 /* UdacityAPIConstants.swift in Sources */,

@@ -10,12 +10,12 @@ import Foundation
 
 extension ParseAPIClient {
     struct ParseConstants {
-        static let limitNumber: Int = 25
+        static let limitNumber: Int = 100
         static let parseUrl = "https://parse.udacity.com/parse/classes/StudentLocation"
         static let appID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
         static let apiKey = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
         static let getMethodLimit = "?limit=\(limitNumber)"
-        static let oderListAtoZ = "&order=-updatedAt"
+        static let orderFromNewestToOldest = "&order=-updatedAt"
     }
 }
 

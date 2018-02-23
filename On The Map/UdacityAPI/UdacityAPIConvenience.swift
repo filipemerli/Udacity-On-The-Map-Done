@@ -25,27 +25,21 @@ extension UdacityAPIClient {
                     if let userKey = accountInfo["key"] as? String {
                         self.userKeyAPIClient = userKey
                         Student.shared.userKey = userKey
-                        self.taskForDeleteMethod() { (success, error) in
-                            if success! {
-                                self.taskForGetUserInfo(userKey: self.userKeyAPIClient) { (result, error) in
-                                    if (error == nil) {
-                                        if let userInformation = result!["user"] as? [String: AnyObject]! {
-                                            if let nickName = userInformation["nickname"] as? String {
-                                                Student.shared.firstName = nickName
-                                                completionHandlerForAuth(true, nil)
-                                            } else {
-                                                completionHandlerForAuth(false, "No name information")
-                                            }
-                                            
-                                        } else {
-                                            completionHandlerForAuth(false, "No user info information")
-                                        }
+                        self.taskForGetUserInfo(userKey: self.userKeyAPIClient) { (result, error) in
+                            if (error == nil) {
+                                if let userInformation = result!["user"] as? [String: AnyObject]! {
+                                    if let nickName = userInformation["nickname"] as? String {
+                                        Student.shared.firstName = nickName
+                                        completionHandlerForAuth(true, nil)
                                     } else {
-                                        completionHandlerForAuth(false, "No user info returned from server")
+                                        completionHandlerForAuth(false, "No name information")
                                     }
+                                    
+                                } else {
+                                    completionHandlerForAuth(false, "No user info information")
                                 }
                             } else {
-                                completionHandlerForAuth(false, error?.domain)
+                                completionHandlerForAuth(false, "No user info returned from server")
                             }
                         }
                         

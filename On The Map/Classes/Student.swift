@@ -21,6 +21,8 @@ class Student {
     var state = ""
     var city = ""
     var mapString = ""
+    var objectId = ""
+    var firstTimePosting: Bool?
     
     
     class var shared: Student {

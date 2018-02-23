@@ -21,13 +21,18 @@ class StudentLoc {
     
     // MARK: Initializers
     
-    init(dictionary: [String:AnyObject]) {
+    init?(dictionary: [String:AnyObject]) {
+        
+        guard let latitude = dictionary["latitude"] as? Float, let longitude = dictionary["longitude"] as? Float else {
+            return nil
+        }
+        
+        self.latitude = latitude
+        self.longitude = longitude
         objectId = dictionary["objectId"] as? String
         uniqueKey = dictionary["uniqueKey"] as? String
         firstName = dictionary["firstName"] as? String
         lastName = dictionary["lastName"] as? String
-        latitude = dictionary["latitude"] as? Float
-        longitude = dictionary["longitude"] as? Float
         mapString = dictionary["mapString"] as? String
         mediaUrl = dictionary["mediaURL"] as? String
 
@@ -36,11 +41,11 @@ class StudentLoc {
     static func locationsFromResults(_ results: [[String:AnyObject]]) -> [StudentLoc] {
         
         var locations = [StudentLoc]()
-        
         for result in results {
-            locations.append(StudentLoc(dictionary: result))
+            if let student = StudentLoc(dictionary: result) {
+                locations.append(student)
+            }
         }
-        
         return locations
     }
     

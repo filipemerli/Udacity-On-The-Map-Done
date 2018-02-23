@@ -77,7 +77,6 @@ class UdacityAPIClient: NSObject {
         let session = URLSession.shared
         let task = session.dataTask(with: request) { data, response, error in
             func sendError(_ error: String) {
-                print(error)
                 let userInfo = [NSLocalizedDescriptionKey : error]
                 completionHandlerForDelete(true, NSError(domain: "taskForPostMethod", code: 1, userInfo: userInfo))
             }

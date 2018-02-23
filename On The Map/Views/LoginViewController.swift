@@ -38,6 +38,8 @@ class LoginViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         subscribeToKeyboardNotifications()
+        emailTextField.text = ""
+        passwordTextField.text = ""
     }
     
     @IBAction func loginRequest (_ sender: Any) {
@@ -76,8 +78,7 @@ class LoginViewController: UIViewController {
     }
     
     func completeLogin() {
-        let controller =
-            self.storyboard?.instantiateViewController(withIdentifier: "MapView") as! UITabBarController
+        let controller = self.storyboard?.instantiateViewController(withIdentifier: "MapView") as! UITabBarController
         self.present(controller, animated: true, completion: nil)
     }
     
